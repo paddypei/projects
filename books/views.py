@@ -25,7 +25,7 @@ def index(request):
 @ensure_csrf_cookie
 def list_book(request):
     return render_to_response('list_book.html', {})
-
+@ensure_csrf_cookie
 def list_book_data(request):
     #response = HttpResponse()
     #response['Content-type'] = "text/javascript"
