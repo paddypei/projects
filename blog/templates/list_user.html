@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %} list User {% endblock %}
+{% block content %}
+{% for m in names %}
+   <a>{{m.role_name}}</a>
+   {% endfor %}
+{% endblock %}
