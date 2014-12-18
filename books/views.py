@@ -7,6 +7,7 @@ from books.models import Book
 from django.core.paginator import PageNotAnInteger, Paginator, InvalidPage, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 import sys
 def index(request):
@@ -22,19 +23,18 @@ def index(request):
     return render_to_response('index.html', {'booklist':booklist, 'currentPage':page, 'numPerPage':5})
 
 def list_book(request):
-
-    return render_to_response('list_book.html', locals())
+    return render_to_response('list_book.html', {})
 
 def list_book_data(request):
     #response = HttpResponse()
     #response['Content-type'] = "text/javascript"
 
-    bookData = Book.objects.select_related()
+    #bookData = Book.objects.select_related()
     #response.write(serializers.serialize("json", bookData))
     #return response
-    #response_data = {}
-    #response_data['result'] = 'failed'
-    #response_data['message'] = 'You messed up'
-    return HttpResponse(json.dumps(bookData,ensure_ascii = False), content_type="application/json")
+    response_data = {}
+    response_data['title'] = 'failed'
+    response_data['publication_date'] = 'You messed up'
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
     #return render_to_response('simpleTodo.html', {'todolist': todolist},
     #    context_instance=RequestContext(request))

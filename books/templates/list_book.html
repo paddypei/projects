@@ -10,7 +10,7 @@
 <body>
 <div class="container">
     <form action="" method="post">
-        <input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token }}" />
+        {{ csrf_token }}
         <div class="row">
             <div class="span8 offset2">
                 <div id="todo" class="well">
@@ -36,8 +36,7 @@
 <script src="/static/js/modernizr.js"></script>
 <script src="/static/js/jquery.js"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-    listAjaxBook();
+
     function listAjaxBook()
     {
         console.log('ddd');
@@ -70,5 +69,8 @@ $(document).ready(function(){
              + '</tr>';
         $("#data_table tbody").html(html);
     }
+
+$(function(){
+    listAjaxBook();
 });
 </script>
