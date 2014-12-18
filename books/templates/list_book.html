@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="span8 offset2">
+            <div id="todo" class="well">
+            <table class="table table-hover" id="data_table">
+                <thead>
+                    <tr>
+                        <td>
+                            <h3 class="text-success">The Book List</h3>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(function(){
+    listAjaxBook();
+    function listAjaxBook()
+    {
+        var url = "{% url "list_book" %}";
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            success: function(json){
+                if(json){
+                    appendListData(json);
+                }
+            },
+            error: function(params, response){
+
+            }
+        });
+    }
+    //加载数据
+    function appendListData(data)
+    {
+        html = "";
+        html += '<tr>'
+             + '<td class="todo">11</td>'
+             + '<td class="todo">33</td>'
+             + '<td class="todo">44</td>'
+             + '<td class="todo">55</td>'
+             + '</tr>';
+        $("#data_table tbody").html(html);
+    }
+});
+</script>
