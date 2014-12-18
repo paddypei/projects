@@ -8,8 +8,8 @@ from django.db import connection
 
 import sys
 def index(request):
-    booklist = Book.objects.select_related().order_by('-id')
-    print connection.queries
+    booklist = Book.objects.select_related()
+    print booklist
     page = request.POST.get('page', 1)
     paginator = Paginator(booklist, 5)
     try:
@@ -19,3 +19,6 @@ def index(request):
     except EmptyPage:
         booklist = paginator.page(paginator.num_pages)
     return render_to_response('index.html', {'booklist':booklist, 'currentPage':page, 'numPerPage':5})
+
+def list_book(request):
+    return render_to_response('list_book.html', locals())

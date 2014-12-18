@@ -24,14 +24,17 @@ SECRET_KEY = 'x9o8!!y&cv+(ve_(+zfhworzd*y^*gco_lqyx9dqsxwc2_t1lp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
-#INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1',)
+
+
 
 # Application definition
 
 INSTALLED_APPS = (
+    'grappelli',#这里grapplli 必须位于django.contrib.admin之前
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +48,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
 )
 
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
+DEBUG_TOOLBAR_PATCH_SETTINGS = True
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -60,18 +63,14 @@ MIDDLEWARE_CLASSES = (
 )
 
 DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.cache.CachePanel',
-        'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.logging.LoggingPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.cache.CacheDebugPanel',
+        #'debug_toolbar.panels.profiler.ProfilerDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        #'debug_toolbar.panels.templates.TemplatesDebugPanel',
+        # If you are using the profiler panel you don't need the timer
+        # 'debug_toolbar.panels.timer.TimerDebugPanel',
 ]
 
 ROOT_URLCONF = 'blog.urls'
@@ -88,7 +87,7 @@ TEMPLATE_DIRS = (
     #todo/templdates
     #D:\projects\blog\blog
     os.path.join(BASE_DIR,'templates'),
-    'D:/python/Lib/site-packages/django_debug_toolbar-0.8.5-py2.7.egg/debug_toolbar/templates/',
+    'D:/python/Lib/site-package/django_debug_toolbar-1.2.2-py2.7.egg/debug_toolbar/templates',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -128,6 +127,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
