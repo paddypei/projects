@@ -22,6 +22,7 @@ def index(request):
         booklist = paginator.page(paginator.num_pages)
     return render_to_response('index.html', {'booklist':booklist, 'currentPage':page, 'numPerPage':5})
 
+@ensure_csrf_cookie
 def list_book(request):
     return render_to_response('list_book.html', {})
 
