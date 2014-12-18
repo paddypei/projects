@@ -57,10 +57,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    #'django.middleware.csrf.CsrfResponseMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 DEBUG_TOOLBAR_PANELS = [
@@ -88,7 +87,7 @@ TEMPLATE_DIRS = (
     #todo/templdates
     #D:\projects\blog\blog
     os.path.join(BASE_DIR,'templates'),
-    'D:\python\Lib\site-packages\django_debug_toolbar-1.2.2-py2.7.egg\debug_toolbar\templates'
+    'D:/python/Lib/site-package/django_debug_toolbar-1.2.2-py2.7.egg/debug_toolbar/templates',
 )
 
 DEBUG_TOOLBAR_CONFIG = {

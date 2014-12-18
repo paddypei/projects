@@ -5,7 +5,7 @@ from django.contrib import admin
 from books.models import Book,Publisher,Author
 
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title','publication_date',)
+    list_display = ('title','author_name','publisher_name','publication_date',)
     list_filter = ('title',)
     ordering = ('-publication_date',)
     #显示list字段 publisher_name属于表publisher的字段

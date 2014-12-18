@@ -12,6 +12,15 @@ import json
 import sys
 def index(request):
     booklist = Book.objects.select_related()
+from django.shortcuts import render_to_response,get_object_or_404,render
+from django.template import RequestContext
+from books.models import Book
+from django.core.paginator import PageNotAnInteger, Paginator, InvalidPage, EmptyPage
+from django.db import connection
+
+import sys
+def index(request):
+    booklist = Book.objects.select_related()
     page = request.POST.get('page', 1)
     paginator = Paginator(booklist, 5)
     try:
@@ -24,18 +33,17 @@ def index(request):
 
 @ensure_csrf_cookie
 def list_book(request):
-    return render_to_response('list_book.html', {})
+    return render_to_response('list_book.html', locals())
+
 @ensure_csrf_cookie
 def list_book_data(request):
     #response = HttpResponse()
     #response['Content-type'] = "text/javascript"
 
-    #bookData = Book.objects.select_related()
+    bookData = Book.objects.select_related()
     #response.write(serializers.serialize("json", bookData))
     #return response
     response_data = {}
     response_data['title'] = 'failed'
     response_data['publication_date'] = 'You messed up'
-    return HttpResponse(json.dumps(response_data), content_type="application/json")
-    #return render_to_response('simpleTodo.html', {'todolist': todolist},
-    #    context_instance=RequestContext(request))
+    return HttpResponse(json.dumps(bookData), content_type="application/json")
