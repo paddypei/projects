@@ -1,0 +1,90 @@
+<form action="/book/add_book/" method="post" class="form-inline table-form" id="add_book_form" name="addBook" role="form">
+    <div class="modal-header">
+        <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+        <h3 id="myModalLabel">Add Book</h3>
+    </div>
+    <div class="modal-body">
+        <div style="clear: both;width:100%;" class="form-group">
+          <label for="name">名称:</label>
+          <input type="text" placeholder="请输入名称" id="book_name" name="book_name" class="form-control input-text ipt-width-normal">
+        </div>
+        <div style="clear: both;width:100%;" class="form-group">
+          <label for="name">作者:</label>
+          <ul id="ul_sale" style="height:100px;overflow-y:auto;border:1px solid #ccc;border-radius:4px;padding:5px 10px;">
+                {% for item in authors %}
+                <li style="float:left;width:100px;">
+                <input type="checkbox" value="{{item.id}}" name="authorIDs[]">
+                    {{item.name}}
+                </li>
+                {% endfor %}
+
+          </ul>
+        </div>
+        <div style="clear: both;width:100%;" class="form-group">
+          <label for="name">出版社:</label>
+          <select class="form-control" require="true" id="publisher" name="publisher">
+            <option value="">请选择</option>
+                {% for item in publishers %}
+                    <option value="{{item.id}}">{{item.name}}</option>
+                {% endfor %}
+            
+          </select>
+        </div>
+        <div style="clear: both;width:100%;" class="form-group">
+          <label for="name">出版日期:</label>
+          <input type="text" name="publish_date" id="publish_date" class="span2 form-control input-text ipt-width-normal">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button aria-hidden="true" data-dismiss="modal" class="btn">Close</button>
+        <button name="submit" type="submit" class="btn btn-success" id="save_btn">Save changes</button>
+    </div>
+</form>
+<script type="text/javascript">
+$(function(){
+    $('#publish_date').datepicker({
+         format: "yyyy-mm-dd",
+         autoclose: true,
+         language: "zh-CN"
+    });
+
+    function checkAuthor()
+    {
+        var authorChecked = $("input[name='authorIDs[]']:checked");
+        console.log(authorChecked.length);
+        if(authorChecked){
+            return authorChecked.length > 0;
+        }else{
+            return false;
+        }
+    }
+
+    function validate()
+    {
+        if(!checkAuthor()){
+            alert("请选择一个作者");
+            return false;
+        }else{
+            $("#save_btn").attr("disabled","disabled");
+            return true;
+        }
+        return false;
+    }
+
+    $("#add_book_form").ajaxForm({
+        dataType:  'json',
+        beforeSubmit: validate,
+        success: response
+    });
+
+    function response(responseText, statusText, xhr, $form){
+       if(responseText.success == 'true'){
+            $('#addBookModal').modal('hide');
+            window.location.reload();
+        }else{
+            $("#save_btn").removeAttr("disabled");
+            return false;
+        }
+    }
+});
+</script>
