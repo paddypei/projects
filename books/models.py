@@ -26,4 +26,6 @@ class Book(models.Model):
     publication_date = models.DateField()
 
     def __unicode__(self):
-        return u'%d %s %s' % (self.id, self.title, self.publisher.name)
+        return self.title
+    #def __unicode__(self):
+    #    return u'%d %s %s' % (self.id, self.title, self.publisher.name)

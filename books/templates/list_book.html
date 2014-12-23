@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<<<<<<< HEAD
 
 
 <script src="/static/js/modernizr.js"></script>
@@ -33,22 +34,61 @@
             </div>
         </div>
     </form>
+=======
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+</head>
+<body>
+<div class="container">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token }}" />
+    <div class="row">
+        <div class="span8 offset2">
+            <div id="todo" class="well">
+            <table class="table table-hover" id="data_table">
+                <thead>
+                    <tr>
+                        <td>
+                            <h3 class="text-success">The Book List</h3>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+>>>>>>> blog
 </div>
 </body>
 </html>
 <script type="text/javascript">
+<<<<<<< HEAD
 
+=======
+$(document).ready(function(){
+    listAjaxBook();
+>>>>>>> blog
     function listAjaxBook()
     {
         console.log('ddd');
         var url = "{% url "list_book_data" %}";
+<<<<<<< HEAD
         console.log('xxxxxxxx', url);
+=======
+        console.log('xxxxxxxx', url)
+>>>>>>> blog
         $.ajax({
             url: url,
             type: 'post',
             dataType: 'json',
             success: function(json){
+<<<<<<< HEAD
                 console.log("xxx", json);
+=======
+                console.log("xxx", json)
+>>>>>>> blog
                 if(json){
                     appendListData(json);
                 }
@@ -70,8 +110,11 @@
              + '</tr>';
         $("#data_table tbody").html(html);
     }
+<<<<<<< HEAD
 
 $(function(){
     listAjaxBook();
+=======
+>>>>>>> blog
 });
 </script>
