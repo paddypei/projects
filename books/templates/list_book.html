@@ -4,16 +4,19 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-<<<<<<< HEAD
+    <link rel="stylesheet" href="/static/css/common.css">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/jquery.form.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
 
-
-<script src="/static/js/modernizr.js"></script>
-<script src="/static/js/jquery.js"></script>
-<script src="/static/js/mycookies.js"></script>
+    <link rel="stylesheet" href="/static/css/datepicker.css">
+    <script src="/static/js/bootstrap-datepicker.js"></script>
+    <script src="/static/js/mycookies.js"></script>
 </head>
+
 <body>
 <div class="container">
-    <form action="" method="post">
+    <form action="" method="post" id="book_form">
         {{ csrf_token }}
         <div class="row">
             <div class="span8 offset2">
@@ -23,98 +26,105 @@
                         <tr>
                             <td>
                                 <h3 class="text-success">The Book List</h3>
+                                <a id="add_book" class="btn btn-warning glyphicon glyphicon-plus" href="{% url "add_book" %}"
+                                 data-target="#addBookModal" data-toggle="modal">
+                                    <i class="icon-plus icon-white"></i><span>添加</span>
+                                </a>
+                                <a id="search" class="btn btn-warning" role="button" data-toggle="modal">
+                                    <i class="icon-white"></i><span>查询</span>
+                                </a>
                             </td>
                         </tr>
                     </thead>
                     <tbody>
-                    test
                     </tbody>
                 </table>
-                </div>
+                 <div class="paginator pagelist"></div>
+                 <input type="hidden" name="page" value="1" id="pageinput">
             </div>
         </div>
+            </div>
     </form>
-=======
-    <script src="/static/js/jquery.js"></script>
-    <script src="/static/js/bootstrap.js"></script>
-</head>
-<body>
-<div class="container">
-    <input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token }}" />
-    <div class="row">
-        <div class="span8 offset2">
-            <div id="todo" class="well">
-            <table class="table table-hover" id="data_table">
-                <thead>
-                    <tr>
-                        <td>
-                            <h3 class="text-success">The Book List</h3>
-                        </td>
-                    </tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-            </table>
-            </div>
-        </div>
-    </div>
->>>>>>> blog
 </div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="addBookModal" tabindex="-1" role="dialog"
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-body">
+            在这里添加一些文本
+         </div>
+      </div>
+    </div>
+</div>
+<!-- Modal end -->
 </body>
 </html>
 <script type="text/javascript">
-<<<<<<< HEAD
+$(function(){
 
-=======
-$(document).ready(function(){
-    listAjaxBook();
->>>>>>> blog
-    function listAjaxBook()
+     var current_page = 1;
+     var url = "{% url "list_book_data" %}";
+     var options = {
+        url:  url,
+        type: 'post',
+        forceSync: true,
+        beforeSubmit:  validatePost,
+        success:       reponseQuery,
+        dataType: 'json'
+    };
+
+
+    function validatePost()
     {
-        console.log('ddd');
-        var url = "{% url "list_book_data" %}";
-<<<<<<< HEAD
-        console.log('xxxxxxxx', url);
-=======
-        console.log('xxxxxxxx', url)
->>>>>>> blog
-        $.ajax({
-            url: url,
-            type: 'post',
-            dataType: 'json',
-            success: function(json){
-<<<<<<< HEAD
-                console.log("xxx", json);
-=======
-                console.log("xxx", json)
->>>>>>> blog
-                if(json){
-                    appendListData(json);
-                }
-            },
-            error: function(params, response){
-
-            }
-        });
+        return true;
     }
+    function reponseQuery(responseText, statusText, xhr, $form)
+    {
+        appendListData(responseText);
+    }
+
+    $("#search").bind('click', function(){
+        $("#book_form").submit();
+    });
+
+    //点击页码执行ajax请求
+    $(document).delegate("div.paginator > a", 'click', function(){
+        current_page = $(this).attr("rel");
+        $("#pageinput").val(current_page);
+        $("#book_form").submit();
+    });
+
+    $("#book_form").submit(function(){
+        $(this).ajaxSubmit(options);
+        return false;
+    });
+
     //加载数据
     function appendListData(data)
     {
         html = "";
-        html += '<tr>'
-             + '<td class="todo">11</td>'
-             + '<td class="todo">33</td>'
-             + '<td class="todo">44</td>'
-             + '<td class="todo">55</td>'
-             + '</tr>';
+        $.each(data.rows, function(k,v){
+            html += '<tr>'
+                 + '<td class="todo">'
+                 + v.title
+                 + '</td>'
+                 + '<td class="todo">'
+                 + v.name
+                 + '</td>'
+                 + '<td class="todo">'
+                 + v.authorName
+                 + '</td>'
+                 + '<td class="todo">'
+                 + v.address
+                 + '</td>'
+                 + '</tr>';
+        });
         $("#data_table tbody").html(html);
+        $(".pagelist").html(data.pagehtml);
     }
-<<<<<<< HEAD
 
-$(function(){
-    listAjaxBook();
-=======
->>>>>>> blog
+
 });
 </script>
