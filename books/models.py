@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-
 from django.db import models
 
 # Create your models here.
@@ -19,13 +20,29 @@ class Author(models.Model):
     def __unicode__(self):
         return self.name
 
+class BookManager(models.Manager):
+    def get_or_create(self, **kwargs):
+        defaults = kwargs.pop('defaults', {})
+        author_list = defaults.pop('author_list', {})
+        Book.author_list = author_list
+        kwargs.update(defaults)
+        super(BookManager, self).get_or_create(**kwargs)
+
 class Book(models.Model):
     title = models.CharField(max_length=100)
     authors = models.ManyToManyField(Author)
     publisher = models.ForeignKey(Publisher)
     publication_date = models.DateField()
+    '''
+    author_list = []
+    objects = BookManager()
 
+    def save(self, *args, **kwargs):
+        super(Book, self).save()
+        for i in self.author_list:
+            p, created = Author.objects.get_or_create(name = i)
+            self.author_list.add(p)
+        self.author_list = []
+    '''
     def __unicode__(self):
         return self.title
-    #def __unicode__(self):
-    #    return u'%d %s %s' % (self.id, self.title, self.publisher.name)

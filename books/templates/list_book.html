@@ -47,8 +47,21 @@
     </form>
 </div>
 
-<!-- 模态框（Modal） -->
+<!-- 模态框（Modal) add -->
 <div class="modal fade" id="addBookModal" tabindex="-1" role="dialog"
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-body">
+            在这里添加一些文本
+         </div>
+      </div>
+    </div>
+</div>
+<!-- Modal end -->
+
+<!-- 模态框(Modal) edit -->
+<div class="modal fade" id="editBookModal" tabindex="-1" role="dialog"
    aria-labelledby="myModalLabel" aria-hidden="true">
    <div class="modal-dialog">
       <div class="modal-content">
@@ -63,7 +76,6 @@
 </html>
 <script type="text/javascript">
 $(function(){
-
      var current_page = 1;
      var url = "{% url "list_book_data" %}";
      var options = {
@@ -74,7 +86,6 @@ $(function(){
         success:       reponseQuery,
         dataType: 'json'
     };
-
 
     function validatePost()
     {
@@ -88,6 +99,15 @@ $(function(){
     $("#search").bind('click', function(){
         $("#book_form").submit();
     });
+
+    function loadBookData(){
+        $("#book_form").ajaxSubmit(options);
+        return false;
+    }
+
+    window.onload = function(){
+        loadBookData();
+    };
 
     //点击页码执行ajax请求
     $(document).delegate("div.paginator > a", 'click', function(){
@@ -107,22 +127,42 @@ $(function(){
         html = "";
         $.each(data.rows, function(k,v){
             html += '<tr>'
-                 + '<td class="todo">'
+                 + '<td>'
+                 + v.id
+                 + '</td>'
+                 + '<td>'
                  + v.title
                  + '</td>'
-                 + '<td class="todo">'
+                 + '<td>'
                  + v.name
                  + '</td>'
-                 + '<td class="todo">'
+                 + '<td>'
                  + v.authorName
                  + '</td>'
-                 + '<td class="todo">'
+                 + '<td>'
                  + v.address
+                 + '</td>'
+                 + '<td>'
+                 + '<a href="javascript:void(0)" href="" book_id="'
+                 + v.id
+                 + '" class="btn btn-primary btn-sm model_btn_edit">'
+                 + '<span class="glyphicon glyphicon-pencil"></span>'
+                 + '</a>'
                  + '</td>'
                  + '</tr>';
         });
         $("#data_table tbody").html(html);
         $(".pagelist").html(data.pagehtml);
+
+        $("a.model_btn_edit").each(function(){
+            $(this).bind('click', function(){
+                //var url = "/book/edit_book/?id=" + $(this).attr("book_id");
+                var url = "/book/edit_book/" + $(this).attr("book_id");
+                console.log('url:', url);
+                $("#editBookModal .modal-content").load(url);
+                $("#editBookModal").modal('show');
+            });
+        });
     }
 
 

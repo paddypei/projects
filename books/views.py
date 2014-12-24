@@ -1,6 +1,6 @@
 # -*-coding: utf-8 -*-
 #!/usr/bin/env python
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404
 from django.shortcuts import render_to_response,get_object_or_404,render
 from django.template import RequestContext
 from books.models import Book,Author,Publisher
@@ -20,7 +20,6 @@ def index(request):
 def index(request):
     booklist = Book.objects.select_related()
     page = request.GET.get('page', 1)
-    print "dddd" + str(page)
     paginator = Paginator(booklist, 5)
     try:
         booklist = paginator.page(page)
@@ -30,50 +29,72 @@ def index(request):
         booklist = paginator.page(paginator.num_pages)
     return render_to_response('index.html', {'booklist':booklist, 'currentPage':page, 'numPerPage':5})
 
+def edit_book(request, id = ''):
+    if request.method == 'POST':
+        try:
+            bookItemData = Book.objects.get(id=id)
+        except Exception:
+            raise Http404
+        title = request.POST['book_name']
+        publisherID = request.POST['publisher']
+        publish_date = request.POST['publish_date']
+        authors_list = request.POST.getlist('authorIDs[]')
+        publisher = Publisher.objects.get(id=publisherID)
+        Author.objects.filter(book_id=id).delete()
+        # publisher是外键 这里必须是实例 键为model里面定义的
+        bookItemData.title = title
+        bookItemData.publication_date = publish_date
+        bookItemData.publisher = publisher
+        bookItemData.save()
+        for item in authors_list:
+            author = Author.objects.get(id=item)
+            bookItemData.authors.add(author)
+            bookItemData.save()
+        response_data = {}
+        response_data['result'] = 'success'
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    else:
+        try:
+            authors = Author.objects.all()
+            publishers = Publisher.objects.all()
+            bookItemData = Book.objects.get(id=id)
+            data = {}
+            data['id'] = bookItemData.id
+            data['title'] = bookItemData.title
+            data['publication_date'] = bookItemData.publication_date
+            data['publisher_id'] = bookItemData.publisher_id
+            authorSet = []
+            for item in bookItemData.authors.all():
+                authorSet.append(item.id)
+            data['authorSet'] = authorSet
+            print data
+        except Exception:
+            raise Http404
+        return render_to_response('edit_book.html', locals())
+
+
 
 def add_book(request):
     if request.method == 'POST':
         title = request.POST['book_name']
-        publisher = request.POST['publisher']
+        publisherID = request.POST['publisher']
         publish_date = request.POST['publish_date']
-
-        authors = request.POST['authorIDs[]']
-        print authors
-        book = Book(title=title, publication_date = publish_date, publisher_id = authors)
-
-        for item in authors:
-            author = Book.objects.get_or_create(name=item)
-            Book.authors.add(author)
+        authors_list = request.POST.getlist('authorIDs[]')
+        publisher = Publisher.objects.get(id=publisherID)
+        # publisher是外键 这里必须是实例 键为model里面定义的
+        book = Book(title=title, publisher=publisher, publication_date=publish_date)
         book.save()
+        for item in authors_list:
+            author = Author.objects.get(id=item)
+            book.authors.add(author)
+            book.save()
+        response_data = {}
+        response_data['result'] = 'success'
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         authors = Author.objects.all()
         publishers = Publisher.objects.all()
         return render_to_response('add_book.html', locals())
-
-
-    '''
-     if request.method == 'POST':
-
-        #logger = logging.getLogger('mylogger')
-        #记录log
-        atodo = request.POST['todo']
-        priority = request.POST['priority']
-        user = User.objects.get(id='1')
-        todo = Todo(user=user, todo=atodo, priority=priority, flag='1')
-
-        todo.save()
-        todolist = Todo.objects.filter(flag='1')
-        finishtodos = Todo.objects.filter(flag=0)
-        return render_to_response('showtodo.html',
-            {'todolist': todolist, 'finishtodos': finishtodos},
-            context_instance=RequestContext(request))
-    else:
-        todolist = Todo.objects.filter(flag=1)
-        finishtodos = Todo.objects.filter(flag=0)
-        return render_to_response('simpleTodo.html',
-            {'todolist': todolist, 'finishtodos': finishtodos})
-    '''
-
 
 @ensure_csrf_cookie
 def list_book(request):
@@ -81,10 +102,10 @@ def list_book(request):
 
 @ensure_csrf_cookie
 def list_book_data(request):
-    bookData = Book.objects.all()
+    bookData = Book.objects.order_by('-publication_date')
     num = bookData.count()
     page = request.REQUEST.get('page', 1)
-    perpage = 3
+    perpage = 5
     paginator = Paginator(bookData, perpage)
     try:
         bookData = paginator.page(page)
@@ -96,21 +117,10 @@ def list_book_data(request):
         bookData = paginator.page(page)
     data = {}
     data['rows'] = []
-    '''
-    if int(page) != 1:
-        prevHtml = "<a id=\"prev\" rel=\"%s\" >Prev</a>" % bookData.previous_page_number()
-    else:
-        prevHtml = ""
-
-    if int(page) < paginator.num_pages:
-        nextHtml = "<a id=\"next\" rel=\"%s\">Next</a>" %  bookData.next_page_number()
-    else:
-        nextHtml = ""
-    #data['pagehtml'] = prevHtml + nextHtml
-    '''
     data['pagehtml'] = ajax_pages(num, int(page), perpage)
     for item in bookData:
         row = {}
+        row['id'] = item.id
         row['title'] = item.title
         row['name'] = item.publisher.name
         row['address'] = item.publisher.address
@@ -131,7 +141,6 @@ def ajax_pages(num, current_page, perpage = 5, setpages = 10):
         offset = int(math.ceil(setpages))
         pageNumbers = float(num/float(perpage))
         pages = int(math.ceil(pageNumbers))
-        print "page = " + str(pages) + 'current_page=' + str(current_page) + 'perpage' + str(perpage)
         froms = int(current_page) - int(offset)
         to = int(current_page) + int(offset)
         more = 0
@@ -150,14 +159,12 @@ def ajax_pages(num, current_page, perpage = 5, setpages = 10):
         if current_page > 0 :
             multipage += ' <a href="javascript:void(0);" class="a1" rel="%s">Prev</a>' % (current_page - 1)
             if current_page == 1:
-
                 multipage += ' <span class="current">1</span>'
             elif current_page > 6 and more == 1:
                 multipage += ' <a rel="1" href="javascript:void(0);">1</a>..'
             else:
                 multipage += ' <a rel="1" href="javascript:void(0);">1</a>'
         for i in range(int(froms), int(to) + 1):
-            print "i ====" + str(i)
             if i != current_page:
                 multipage += ' <a rel="%s" href="javascript:void(0);">%s</a>' % (i, i)
             else:
