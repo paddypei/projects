@@ -30,7 +30,7 @@ class BookManager(models.Manager):
 
 class Book(models.Model):
     title = models.CharField(max_length=100)
-    authors = models.ManyToManyField(Author)
+    authors = models.ManyToManyField(Author,related_name="translater")
     publisher = models.ForeignKey(Publisher)
     publication_date = models.DateField()
     '''

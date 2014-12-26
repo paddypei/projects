@@ -100,7 +100,7 @@ $(function(){
         $("#book_form").submit();
     });
 
-    function loadBookData(){
+    window.loadBookData = function(){
         $("#book_form").ajaxSubmit(options);
         return false;
     }

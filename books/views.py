@@ -40,16 +40,18 @@ def edit_book(request, id = ''):
         publish_date = request.POST['publish_date']
         authors_list = request.POST.getlist('authorIDs[]')
         publisher = Publisher.objects.get(id=publisherID)
-        Author.objects.filter(book_id=id).delete()
+        bookItemData.delete()
         # publisher是外键 这里必须是实例 键为model里面定义的
         bookItemData.title = title
         bookItemData.publication_date = publish_date
         bookItemData.publisher = publisher
         bookItemData.save()
+
         for item in authors_list:
             author = Author.objects.get(id=item)
             bookItemData.authors.add(author)
             bookItemData.save()
+
         response_data = {}
         response_data['result'] = 'success'
         return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -67,7 +69,6 @@ def edit_book(request, id = ''):
             for item in bookItemData.authors.all():
                 authorSet.append(item.id)
             data['authorSet'] = authorSet
-            print data
         except Exception:
             raise Http404
         return render_to_response('edit_book.html', locals())
@@ -83,7 +84,7 @@ def add_book(request):
         publisher = Publisher.objects.get(id=publisherID)
         # publisher是外键 这里必须是实例 键为model里面定义的
         book = Book(title=title, publisher=publisher, publication_date=publish_date)
-        book.save()
+        book.save() #保存一下得到一个book的ID
         for item in authors_list:
             author = Author.objects.get(id=item)
             book.authors.add(author)
