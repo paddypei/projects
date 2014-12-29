@@ -33,16 +33,5 @@ class Book(models.Model):
     authors = models.ManyToManyField(Author,related_name="translater")
     publisher = models.ForeignKey(Publisher)
     publication_date = models.DateField()
-    '''
-    author_list = []
-    objects = BookManager()
-
-    def save(self, *args, **kwargs):
-        super(Book, self).save()
-        for i in self.author_list:
-            p, created = Author.objects.get_or_create(name = i)
-            self.author_list.add(p)
-        self.author_list = []
-    '''
     def __unicode__(self):
         return self.title

@@ -134,7 +134,6 @@ STATICFILES_DIRS = (
 )
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
-print ADMIN_MEDIA_PREFIX
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

@@ -39,8 +39,26 @@ def edit_book(request, id = ''):
         publisherID = request.POST['publisher']
         publish_date = request.POST['publish_date']
         authors_list = request.POST.getlist('authorIDs[]')
+
         publisher = Publisher.objects.get(id=publisherID)
-        bookItemData.delete()
+        t = bookItemData.authors.all()
+        for item in t:
+            a = Author.objects.get(id=item.id)
+            bookItemData.authors.remove(a)
+
+        '''
+        a = Author.objects.get(id=1)
+
+        b = Book.objects.get(id=50)
+
+        b.authors.remove(a) 或者 b.authors.filter(id=1).delete()
+        '''
+        '''
+        a = Author.objects.get(id=6)
+        for item in authors_list:
+            author = Author.objects.get(id=item)
+            bookItemData.authors.remove(author)
+        '''
         # publisher是外键 这里必须是实例 键为model里面定义的
         bookItemData.title = title
         bookItemData.publication_date = publish_date
@@ -106,7 +124,7 @@ def list_book_data(request):
     bookData = Book.objects.order_by('-publication_date')
     num = bookData.count()
     page = request.REQUEST.get('page', 1)
-    perpage = 5
+    perpage = 10
     paginator = Paginator(bookData, perpage)
     try:
         bookData = paginator.page(page)
