@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'todo',
     'books',
     'debug_toolbar',
+    'online',
 )
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = True
@@ -59,7 +60,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     #'django.middleware.csrf.CsrfResponseMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    #'django.middleware.security.SecurityMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -87,10 +88,9 @@ TEMPLATE_DIRS = (
     #os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
     #todo/templdates
     #D:\projects\blog\blog
-    os.path.join(BASE_DIR,'templates'),
+    os.path.join(os.path.dirname(BASE_DIR),'templates'),
     'D:/python/Lib/site-package/django_debug_toolbar-1.2.2-py2.7.egg/debug_toolbar/templates',
 )
-
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }

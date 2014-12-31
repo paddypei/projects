@@ -8,6 +8,8 @@ from django.core.paginator import PageNotAnInteger, Paginator, InvalidPage, Empt
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 import json
 import sys
 import math
@@ -18,6 +20,8 @@ def index(request):
 
 
 def index(request):
+    if not request.user.is_authenticated():
+        return render_to_response('books/login_error.html')
     booklist = Book.objects.select_related()
     page = request.GET.get('page', 1)
     paginator = Paginator(booklist, 5)
@@ -27,7 +31,7 @@ def index(request):
         booklist = paginator.page(1)
     except EmptyPage:
         booklist = paginator.page(paginator.num_pages)
-    return render_to_response('index.html', {'booklist':booklist, 'currentPage':page, 'numPerPage':5})
+    return render_to_response('books/index.html', {'booklist':booklist, 'currentPage':page, 'numPerPage':5})
 
 def edit_book(request, id = ''):
     if request.method == 'POST':
@@ -45,20 +49,6 @@ def edit_book(request, id = ''):
         for item in t:
             a = Author.objects.get(id=item.id)
             bookItemData.authors.remove(a)
-
-        '''
-        a = Author.objects.get(id=1)
-
-        b = Book.objects.get(id=50)
-
-        b.authors.remove(a) 或者 b.authors.filter(id=1).delete()
-        '''
-        '''
-        a = Author.objects.get(id=6)
-        for item in authors_list:
-            author = Author.objects.get(id=item)
-            bookItemData.authors.remove(author)
-        '''
         # publisher是外键 这里必须是实例 键为model里面定义的
         bookItemData.title = title
         bookItemData.publication_date = publish_date
@@ -91,7 +81,20 @@ def edit_book(request, id = ''):
             raise Http404
         return render_to_response('edit_book.html', locals())
 
-
+def delete_book(request, id = ''):
+    print "xddd" + request.method
+    if request.method == 'POST':
+        print "tttttttttt"
+        try:
+            bookItemData = Book.objects.get(id=id)
+        except Exception:
+            raise Http404
+        bookItemData.delete()
+        response_data = {}
+        response_data['result'] = 'success'
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    else:
+        print "xxxxxxxxx"
 
 def add_book(request):
     if request.method == 'POST':
@@ -116,6 +119,7 @@ def add_book(request):
         return render_to_response('add_book.html', locals())
 
 @ensure_csrf_cookie
+@login_required(login_url='/admin')
 def list_book(request):
     return render_to_response('list_book.html', {})
 
@@ -150,6 +154,11 @@ def list_book_data(request):
         row['authorName'] = authorName
         data['rows'].append(row)
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+
+
+
 
 def ajax_pages(num, current_page, perpage = 5, setpages = 10):
     if int(num) < 0:

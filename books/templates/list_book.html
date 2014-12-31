@@ -148,6 +148,12 @@ $(function(){
                  + '" class="btn btn-primary btn-sm model_btn_edit">'
                  + '<span class="glyphicon glyphicon-pencil"></span>'
                  + '</a>'
+                 + '&nbsp;'
+                 + '<a href="javascript:void(0)" href="" book_id="'
+                 + v.id
+                 + '" class="btn btn-primary btn-sm model_btn_delete">'
+                 + '<span class="glyphicon glyphicon-pencil"></span>'
+                 + '</a>'
                  + '</td>'
                  + '</tr>';
         });
@@ -162,6 +168,33 @@ $(function(){
                 $("#editBookModal .modal-content").load(url);
                 $("#editBookModal").modal('show');
             });
+        });
+
+        $("a.model_btn_delete").each(function(){
+            $(this).bind('click', function(){
+                var url = "/book/delete_book/" + $(this).attr("book_id") + '/';
+                if(confirm('您确定要删除此记录吗?')){
+                    deleteBook(url);
+                }
+            });
+        });
+    }
+
+    function deleteBook(url)
+    {
+        console.log('url = ', url);
+        $.ajax({
+            url:url,
+            dataType: 'json',
+            type: 'post',
+            success: function(json){
+                if(json.result == 'success'){
+                    loadBookData();
+                }
+            },
+            error: function(){
+
+            }
         });
     }
 
